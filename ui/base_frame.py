@@ -1,5 +1,4 @@
 import tkinter as tk
-from ui.frames import listFrames
 
 class Base_frame:
     def __init__(self, janela):
@@ -16,5 +15,4 @@ class Base_frame:
         titulo.pack()
 
     def set_frame(self, frame):
-        #frame = listFrames[1](self.bloco2, self)
         frame.pack()
