@@ -1,0 +1,56 @@
+{
+    "programas": [
+        {
+            "nome": "Solidworks",
+            "caminho": "C:\\Program Files\\SOLIDWORKS Corp\\SOLIDWORKS\\SLDWORKS.exe",
+            "abrir": 0
+        },
+        {
+            "nome": "Photoshop",
+            "caminho": "C:\\Program Files\\Adobe\\Adobe Photoshop 2025\\Photoshop.exe",
+            "abrir": 0
+        },
+        {
+            "nome": "Illustrator",
+            "caminho": "C:\\Program Files\\Adobe\\Adobe Illustrator 2025\\Support Files\\Contents\\Windows\\Illustrator.exe",
+            "abrir": 0
+        },
+        {
+            "nome": "Blender",
+            "caminho": "C:\\Program Files\\Blender Foundation\\Blender 3.3\\blender.exe",
+            "abrir": 0
+        },
+        {
+            "nome": "Visual Studio",
+            "caminho": "C:\\Users\\mamut\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+            "abrir": 0
+        },
+        {
+            "nome": "Chrome",
+            "caminho": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "abrir": 0
+        }
+    ],
+    "tituloFrames": [{
+        "frame": "Você vai trabalhar hoje?",
+        "id":0,
+        "on":0
+    },  
+    {
+        "frame": "Quais programas abrir?",
+        "id":1,
+        "on":0
+    },
+    {
+        "frame": "Quer abri-los agora?",
+        "id":2,
+        "on":0
+    },
+    {
+        "frame": "Aguarde Mestre!",
+        "id":3,
+        "on":0
+    }]
+
+
+}
