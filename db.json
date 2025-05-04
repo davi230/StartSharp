@@ -18,7 +18,7 @@
         {
             "nome": "Blender",
             "caminho": "C:\\Program Files\\Blender Foundation\\Blender 3.3\\blender.exe",
-            "abrir": 0
+            "abrir": 1
         },
         {
             "nome": "Visual Studio",
@@ -30,27 +30,5 @@
             "caminho": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
             "abrir": 0
         }
-    ],
-    "tituloFrames": [{
-        "frame": "Você vai trabalhar hoje?",
-        "id":0,
-        "on":0
-    },  
-    {
-        "frame": "Quais programas abrir?",
-        "id":1,
-        "on":0
-    },
-    {
-        "frame": "Quer abri-los agora?",
-        "id":2,
-        "on":0
-    },
-    {
-        "frame": "Aguarde Mestre!",
-        "id":3,
-        "on":0
-    }]
-
-
+    ]
 }
