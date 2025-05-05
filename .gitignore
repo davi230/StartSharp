@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 *.pyo
+tst.py
+trata_dados.py
+prog.py
+teste.py
 
 # Ignorar ambientes virtuais
 venv/
