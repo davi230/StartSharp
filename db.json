@@ -18,7 +18,7 @@
         {
             "nome": "Blender",
             "caminho": "C:\\Program Files\\Blender Foundation\\Blender 3.3\\blender.exe",
-            "abrir": 1
+            "abrir": 0
         },
         {
             "nome": "Visual Studio",
@@ -28,7 +28,7 @@
         {
             "nome": "Chrome",
             "caminho": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "abrir": 0
+            "abrir": 1
         }
     ]
 }

@@ -1,17 +1,18 @@
 import tkinter as tk
+from tkinter import ttk
 import json
 import subprocess
-import time
 import os # Adicionado para verificar existência do arquivo JSON
+import estilos
 
 # Classe que cria a janela
 class App:
     def __init__(self):
         self.janela = tk.Tk()
         self.janela.title("Start Sharp")
-        #self.janela.geometry("800x600")
         # Base_frame agora recebe a janela principal (self.janela)
         self.base_frame = Base_frame(self.janela)
+        estilos.Aplica_estilos.janela(self.janela)
        
     def run(self):
         self.janela.mainloop() 
@@ -85,7 +86,10 @@ class Base_frame:
         self.blocoFrames.pack()
         self.blocoBotoes = tk.Frame(janelaPrincipal)
         self.blocoBotoes.pack()
-        
+        estilos.Aplica_estilos.lbBlock(self.blocoLabel)
+        estilos.Aplica_estilos.frBlock(self.blocoFrames)
+        estilos.Aplica_estilos.btnBlock(self.blocoBotoes)
+    
         # Passa os blocos recém-criados para Frames
         # Passa também a janela principal para outras classes que possam precisar dela
         self.frames = Frames(janelaPrincipal, self.blocoLabel, self.blocoFrames, self.blocoBotoes)
@@ -101,6 +105,8 @@ class Label_default:
     def __init__(self, parent_frame): # Renomeado para clareza (parent_frame)
         self.label = tk.Label(parent_frame, text="") # Texto inicial vazio
         self.label.pack()
+        self.label.pack_configure()
+        estilos.Aplica_estilos.label(self.label)
         
     def atualizar_label(self, texto):
         self.label.config(text=texto)
@@ -111,10 +117,14 @@ class Main_buttons():
     def __init__(self, janelaPrincipal, parent_frame):
         self.janela = janelaPrincipal
         
+        self.btn_reset = tk.Button(parent_frame, text="Reset")
+        self.btn_reset.pack()
         self.btn_proximo = tk.Button(parent_frame, text="Próximo")
         self.btn_proximo.pack()
         self.btn_cancelar = tk.Button(parent_frame, text="Cancelar", command=self.cancelar)
         self.btn_cancelar.pack()
+        estilos.Aplica_estilos.button(self.btn_reset, self.btn_proximo, self.btn_cancelar)
+        
         
     # Renomeado para clareza: set_next_action
     def set_next_action(self, acao):
@@ -125,7 +135,11 @@ class Main_buttons():
         # Ex: self.dados_ref.salvar_estado_atual() # Precisaria da referência a Dados
         print("Ação cancelada.") # Feedback
         self.janela.destroy()
-
+        
+    def reset(self, acao):
+        print("Voltando ao primeiro frame")
+        self.btn_reset.config(command=acao)
+        
 # Classe que abre programas
 class Open_progs:
     # Receber a lista de programas e a janela principal
@@ -190,6 +204,9 @@ class Btn_Commands:
     # Etapa 1 -> Fim: Decidiu NÃO trabalhar        
     def fechar_aplicacao(self):
         self.frames_manager.janela.destroy()
+        
+    def reset(self):
+        self.frames_manager.frame_trabalho()
 
 # Classe que cria o frame (Gerenciador de UI/Fluxo)
 class Frames:
@@ -204,7 +221,7 @@ class Frames:
         # Componentes de UI reutilizáveis
         self.titulo = Label_default(self.blocoLabel)
         self.btns = Main_buttons(self.janela, self.blocoBotoes)
-        
+        self.btns.btn_reset.config(command=lambda:self.btns.reset(self.btn_commands.reset()))
         # Gerenciamento de dados
         self.progs_db = Dados() # Instância única para dados
         
@@ -231,12 +248,14 @@ class Frames:
     def frame_trabalho(self):
         self.limpar_frame()
         self.titulo.atualizar_label("Você vai trabalhar hoje?")
+        self.btns.btn_reset.config(state="disabled")
         
         opt = tk.IntVar(value=1) # 1 para Sim, 0 para Não
         radio1 = tk.Radiobutton(self.blocoFrames, text="Sim", variable=opt, value=1)
         radio1.pack()
         radio2 = tk.Radiobutton(self.blocoFrames, text="Não", variable=opt, value=0)
         radio2.pack()
+        estilos.Aplica_estilos.rdbutton(radio1, radio2)
         
         def ao_clicar_proximo():
             if opt.get() == 1:
@@ -247,10 +266,12 @@ class Frames:
                 self.btn_commands.fechar_aplicacao()
                 
         self.btns.set_next_action(ao_clicar_proximo)
+        
    
     def frame_programas(self):
         self.limpar_frame()
         self.titulo.atualizar_label("Quais programas você quer abrir?")
+        self.btns.btn_reset.config(state="normal")
         
         # Itera sobre a lista de programas carregada pela instância Dados
         if not self.progs_db.lstProgs:
@@ -268,10 +289,10 @@ class Frames:
                 text=nome_prog, 
                 variable=var,  # Usa a variável recém-criada
                 onvalue=1, 
-                offvalue=0,
+                offvalue=0
             )
             chk_btn.pack()
-            
+            estilos.Aplica_estilos.chkbutton(chk_btn)
         # Configura o botão Próximo para ir para a definição de tempo    
         self.btns.set_next_action(self.btn_commands.ir_para_definir_tempo)
     
@@ -281,17 +302,18 @@ class Frames:
         
         # Container para os botões de tempo, para melhor layout
         tempo_frame = tk.Frame(self.blocoFrames)
-        
+        estilos.Aplica_estilos.divTempo(tempo_frame)
         # Função para habilitar/desabilitar botões de tempo
         def muda_estado_botoes_tempo():
             estado = "disabled" if self.frm4_opt.get() == 1 else "normal"
             for btn in self._tempos_buttons_widgets:
                 btn.config(state=estado)
+            self.label_tempo_total.config(state=estado)
         # Reseta o tempo acumulado se "Abrir agora" for selecionado
-        if self.frm4_opt.get() == 1:
-            self.tempo_total_segundos = 0
-            # Atualizar label de tempo (se existir)
-            self.atualizar_label_tempo_total()
+            if self.frm4_opt.get() == 1:
+                self.tempo_total_segundos = 0
+                # Atualizar label de tempo (se existir)
+                self.atualizar_label_tempo_total()
         
         # Função para adicionar tempo (em segundos)        
         def add_tempo(segundos):
@@ -305,17 +327,18 @@ class Frames:
         radio1.pack()
         radio2 = tk.Radiobutton(self.blocoFrames, text="Esperar: ", variable=self.frm4_opt, value=0, command=muda_estado_botoes_tempo)
         radio2.pack()
-        
+        estilos.Aplica_estilos.rdbutton(radio1, radio2)
         # Label para mostrar o tempo total acumulado
         self.label_tempo_total = tk.Label(tempo_frame, text="Tempo total: 0 segundos")
-        self.label_tempo_total.pack(side=tk.BOTTOM, pady=5)
+        self.label_tempo_total.pack()
 
         # Botões para adicionar tempo (+1 min, +5 min, etc.)
         tempos_minutos = [1, 5, 10, 30]
         for minutos in tempos_minutos:
             segundos = minutos * 60
-            btn = tk.Button(tempo_frame, text=f"+ {minutos} min", command=lambda s=segundos: add_tempo(s))
+            btn = tk.Button(tempo_frame, text=f"+{minutos} min", command=lambda s=segundos: add_tempo(s))
             btn.pack()
+            estilos.Aplica_estilos.btns(btn)
             self._tempos_buttons_widgets.append(btn) # Guarda referência para ativar/desativar
         
         # Garante que o estado inicial dos botões de tempo está correto
@@ -323,13 +346,16 @@ class Frames:
         
         # Configura o botão Próximo para iniciar a abertura    
         self.btns.set_next_action(self.btn_commands.iniciar_abertura)
-    
+        
+        tempo_frame.pack()
+        
     # Método auxiliar para atualizar o label de tempo
     def atualizar_label_tempo_total(self):
         if hasattr(self, 'label_tempo_total'): # Verifica se o label existe
              total_min = self.tempo_total_segundos // 60
              total_sec = self.tempo_total_segundos % 60
              self.label_tempo_total.config(text=f"Tempo total: {total_min} min {total_sec} seg")
+             estilos.Aplica_estilos.label2(self.label_tempo_total)
     
     def confirmar_e_abrir(self):
         self.limpar_frame() # Limpa os controles de tempo
