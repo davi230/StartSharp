@@ -21,7 +21,7 @@ A ideia é minimizar a procrastinação ao colocar o usuário cara a cara com se
 ### Pré-requisitos
 
 * Certifique-se de ter o **Python 3** instalado no seu computador.
-* Execute o Preparativo.bat para instalar Python e as bibliotecas necessárias.
+* Execute o `Preparativo.bat` para instalar Python e as bibliotecas necessárias.
 * Aguarde a instalação finalizar.
 
 ### Instalação e Execução
@@ -61,7 +61,7 @@ A ideia é minimizar a procrastinação ao colocar o usuário cara a cara com se
 ### Execução Automática ao Ligar o Windows
 
 Para que a pergunta "Você vai trabalhar hoje?" apareça automaticamente toda vez que você ligar o computador:
-Você simplesmente dar dois cliques em InicializarComWindows.bat para que seja feito automaticamente, ou fazer manualmente:
+Você simplesmente dar dois cliques em `InicializarComWindows.bat` para que seja feito automaticamente, ou fazer manualmente:
 
 1.  Localize o arquivo `StartSharp.bat` no diretório do projeto.
 2.  Copie este arquivo (`Ctrl+C`).
