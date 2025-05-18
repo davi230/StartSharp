@@ -2,10 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 import json
 import subprocess
-import os # Adicionado para verificar existência do arquivo JSON
-import estilos
+import os
+import sys
 from tkinter import filedialog
-
+import estilos
+    
 # Classe que cria a janela
 class App:
     def __init__(self):
@@ -18,9 +19,18 @@ class App:
     def run(self):
         self.janela.mainloop() 
 
+def resource_path(rel_path):
+    """Garante o caminho correto para arquivos ao rodar com PyInstaller"""
+    try:
+        # PyInstaller cria a pasta temporária _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, rel_path)
+
 # Classe que importa e trata dados json
 class Dados:
-    DB_PROGRAMAS = 'db.json'
+    DB_PROGRAMAS = resource_path('db.json')
     def __init__(self):
         self.dados = None
         self.lstProgs = []

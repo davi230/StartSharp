@@ -1,13 +1,26 @@
 import tkinter as tk
 import pygame
+import sys
+import os
 # estilos.Aplica_estilos.arg(prop)
+
+def resource_path(rel_path):
+    """Garante o caminho correto para arquivos ao rodar com PyInstaller"""
+    try:
+        # PyInstaller cria a pasta temporária _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, rel_path)
 
 class Aplica_estilos:
     pygame.mixer.init()
+    
     def __init__(self):
         pass
     
-    
+ 
+
 
     # NoSerif - Garamond, Lucida Console 
     # Serif - Palatino Linotype
@@ -271,8 +284,8 @@ class Aplica_estilos:
         
     @staticmethod    
     def button(btn, btn2, btn3):
-        click_sound = pygame.mixer.Sound("click.wav")
-        s3_sound = pygame.mixer.Sound("s3.wav")
+        click_sound = pygame.mixer.Sound(resource_path("sons/click.wav"))
+        s3_sound = pygame.mixer.Sound(resource_path("sons/s3.wav"))
         btn.config(
             font=( "Lucida Console", 12), 
             borderwidth=5,
@@ -312,7 +325,7 @@ class Aplica_estilos:
         
     @staticmethod    
     def btns(btn):
-        s1_sound = pygame.mixer.Sound("s1.wav")
+        s1_sound = pygame.mixer.Sound(resource_path("sons/s1.wav"))
         btn.config(
             font=( "Lucida Console", 12), 
             borderwidth=5,
@@ -326,7 +339,7 @@ class Aplica_estilos:
     
     @staticmethod    
     def chkbutton(chkBtn):
-        s2_sound = pygame.mixer.Sound("s2.wav")
+        s2_sound = pygame.mixer.Sound(resource_path("sons/s2.wav"))
         chkBtn.config(
             font=( "Garamond", 12, "bold"), 
             foreground="#e0ddcf",
@@ -350,7 +363,7 @@ class Aplica_estilos:
     
     @staticmethod    
     def rdbutton(rdBtn, rdBtn2):
-        s2_sound = pygame.mixer.Sound("s2.wav")
+        s2_sound = pygame.mixer.Sound(resource_path("sons/s2.wav"))
         rdBtn.config(
             foreground="#e0ddcf",
             bg="#ec4e20",

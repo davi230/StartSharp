@@ -13,7 +13,7 @@
         {
             "nome": "Blender",
             "caminho": "C:/Program Files/Blender Foundation/Blender 3.3/blender.exe",
-            "abrir": 1
+            "abrir": 0
         },
         {
             "nome": "Illustrator",
