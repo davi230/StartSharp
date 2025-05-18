@@ -4,6 +4,7 @@ import json
 import subprocess
 import os # Adicionado para verificar existência do arquivo JSON
 import estilos
+from tkinter import filedialog
 
 # Classe que cria a janela
 class App:
@@ -24,6 +25,9 @@ class Dados:
         self.dados = None
         self.lstProgs = []
         self.vars = {} # Dicionário para guardar as tk.IntVar dos Checkbuttons (Frames.frame_programas)
+        self.programa_to_add = {}
+        self.entry_var = tk.StringVar()
+        self.caminho_var = tk.StringVar()
         
         try:
             # Verificação se o arquivo existe antes de tentar abrir
@@ -70,6 +74,35 @@ class Dados:
         self.preparar_para_salvar() # Garante que self.dados está atualizado com as vars
         self._salvar_dados()      # Salva o self.dados no arquivo
 
+    def adicionar_programa(self):
+        nome = self.entry_var.get()
+        caminho = self.caminho_var
+        
+        self.programa_to_add = {
+            "nome": nome,
+            "caminho": caminho,
+            "abrir": 0
+        }
+        self.dados["programas"].append(self.programa_to_add)
+        self.salvar_estado_atual()    
+        self.atualizar_lista_interna()
+        print(f"add prog {self.dados["programas"]}")
+    
+    def atualizar_lista_interna(self):
+        """Atualiza lstProgs com base em self.dados após exclusão ou adição."""
+        self.lstProgs = self.dados.get("programas", [])
+        self.vars.clear()
+
+        
+    def excluir_programa(self):
+        self.salvar_estado_atual()
+        self.dados["programas"] = [
+            prog for prog in self.dados["programas"]
+                if prog["abrir"] == 0
+    ]
+        self.salvar_estado_atual()
+        self.atualizar_lista_interna()
+        print(f"Nova db sem progs excluidos: {self.dados["programas"]}")
         
 # Classe que divide a janela em três blocos
 class Base_frame:
@@ -123,7 +156,7 @@ class Main_buttons():
         self.btn_proximo.pack()
         self.btn_cancelar = tk.Button(parent_frame, text="Cancelar", command=self.cancelar)
         self.btn_cancelar.pack()
-        estilos.Aplica_estilos.button(self.btn_reset, self.btn_proximo, self.btn_cancelar)
+        # estilos.Aplica_estilos.button(self.btn_reset, self.btn_proximo, self.btn_cancelar)
         
         
     # Renomeado para clareza: set_next_action
@@ -139,6 +172,8 @@ class Main_buttons():
     def reset(self, acao):
         print("Voltando ao primeiro frame")
         self.btn_reset.config(command=acao)
+        
+    
         
 # Classe que abre programas
 class Open_progs:
@@ -188,7 +223,6 @@ class Btn_Commands:
     
     # Etapa 1 -> 2: Decidiu trabalhar           
     def ir_para_selecao_programas(self):
-        print("verifica s ou n")
         self.frames_manager.frame_programas()
     
     # Etapa 2 -> 3: Selecionou programas
@@ -207,6 +241,8 @@ class Btn_Commands:
         
     def reset(self):
         self.frames_manager.frame_trabalho()
+        
+    
 
 # Classe que cria o frame (Gerenciador de UI/Fluxo)
 class Frames:
@@ -222,6 +258,9 @@ class Frames:
         self.titulo = Label_default(self.blocoLabel)
         self.btns = Main_buttons(self.janela, self.blocoBotoes)
         self.btns.btn_reset.config(command=lambda:self.btns.reset(self.btn_commands.reset()))
+        
+        #self.lb_process = tk.Label(self.blocoBotoes, text="Processando...")
+        
         # Gerenciamento de dados
         self.progs_db = Dados() # Instância única para dados
         
@@ -249,6 +288,11 @@ class Frames:
         self.limpar_frame()
         self.titulo.atualizar_label("Você vai trabalhar hoje?")
         self.btns.btn_reset.config(state="disabled")
+        self.btns.btn_proximo.pack()
+        self.btns.btn_cancelar.pack()
+        self.tempo_total_segundos = 0
+        estilos.Aplica_estilos.button(self.btns.btn_reset, self.btns.btn_proximo, self.btns.btn_cancelar)
+        #self.lb_process.destroy()
         
         opt = tk.IntVar(value=1) # 1 para Sim, 0 para Não
         radio1 = tk.Radiobutton(self.blocoFrames, text="Sim", variable=opt, value=1)
@@ -273,9 +317,25 @@ class Frames:
         self.titulo.atualizar_label("Quais programas você quer abrir?")
         self.btns.btn_reset.config(state="normal")
         
+        div_progs = tk.Frame(self.blocoFrames)
+        div_progs.pack()
+        div_add_progs = tk.Frame(self.blocoFrames)
+        div_add_progs.pack()
+        div_div_add1 = tk.Frame(div_add_progs)
+        div_div_add1.pack()
+        div_div_add2 = tk.Frame(div_add_progs)
+        div_div_add2.pack()
+        
+        div_add1_midle = tk.Frame(div_div_add1)
+        div_add1_midle.pack()
+        div_add1_bottom = tk.Frame(div_div_add1)
+        div_add1_bottom.pack()
+        estilos.Aplica_estilos.div_left_right(div_progs, div_add_progs)
+        estilos.Aplica_estilos.div_top_bottom(div_div_add1, div_add1_bottom, div_div_add2)
+        
         # Itera sobre a lista de programas carregada pela instância Dados
         if not self.progs_db.lstProgs:
-            tk.Label(self.blocoFrames, text="Nenhum programa configurado em db.json").pack()
+            tk.Label( div_progs, text="Nenhum programa configurado em db.json").pack()
         
         for item in self.progs_db.lstProgs:
             nome_prog = item['nome']
@@ -285,7 +345,7 @@ class Frames:
             self.progs_db.vars[nome_prog] = var
             
             chk_btn = tk.Checkbutton(
-                self.blocoFrames, 
+                div_progs, 
                 text=nome_prog, 
                 variable=var,  # Usa a variável recém-criada
                 onvalue=1, 
@@ -293,6 +353,38 @@ class Frames:
             )
             chk_btn.pack()
             estilos.Aplica_estilos.chkbutton(chk_btn)
+        
+        def busca_caminho():
+            self.progs_db.caminho_var = filedialog.askopenfilename(filetypes=[("Executáveis", "*.exe")])
+            if not self.progs_db.caminho_var:
+                return  # Se o usuário cancelar
+        
+        def add():
+            self.progs_db.adicionar_programa()
+            self.frame_programas()
+        
+        def exc():
+            self.progs_db.excluir_programa()
+            self.frame_programas()
+            
+        # Botões para adicionar ou vemover programas 
+        titulo_add_prog = tk.Label(div_add1_midle, text="Adicionar Programa") 
+        titulo_add_prog.pack()
+        label_info_nome = tk.Label(div_add1_bottom, text="Nome:")
+        label_info_nome.pack()
+        entry_nome = tk.Entry(div_add1_bottom, textvariable=self.progs_db.entry_var)
+        entry_nome.pack()
+        btn_caminho = tk.Button(div_add1_bottom, text="Caminho", command=busca_caminho)
+        btn_caminho.pack()
+        btn_add_progs = tk.Button(div_div_add1, text="Adicionar", command=add) 
+        btn_add_progs.pack()  
+         
+        btn_exc_progs = tk.Button(div_div_add2, text="Excluir Programa", command=exc) 
+        btn_exc_progs.pack()  
+        info = tk.Label(div_div_add2, text="Ao apertar em 'Excluir Programa', serão \nexcluídos os programas selecionados, \nentão, cuidado! Certifique-se de selecionar \nos programas a serem EXCLUÍDOS.") 
+        info.pack()
+        estilos.Aplica_estilos.widgets_progs_manager(titulo_add_prog, label_info_nome, entry_nome, btn_caminho, btn_add_progs, btn_exc_progs, info)
+         
         # Configura o botão Próximo para ir para a definição de tempo    
         self.btns.set_next_action(self.btn_commands.ir_para_definir_tempo)
     
@@ -331,6 +423,7 @@ class Frames:
         # Label para mostrar o tempo total acumulado
         self.label_tempo_total = tk.Label(tempo_frame, text="Tempo total: 0 segundos")
         self.label_tempo_total.pack()
+        estilos.Aplica_estilos.label2(self.label_tempo_total)
 
         # Botões para adicionar tempo (+1 min, +5 min, etc.)
         tempos_minutos = [1, 5, 10, 30]
@@ -394,7 +487,8 @@ class Frames:
         self.btns.btn_proximo.pack_forget()
         self.btns.btn_cancelar.pack_forget()
         # Adiciona um label informativo no bloco de botões
-        tk.Label(self.blocoBotoes, text="Processando...").pack()
+        #self.lb_process.pack()
+        #estilos.Aplica_estilos.processando(self.lb_process)
 
 
         # Chama o método para agendar ou iniciar a abertura
